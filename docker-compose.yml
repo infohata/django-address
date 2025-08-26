@@ -1,31 +1,38 @@
-version: "3"
 services:
 
   db:
-    image: postgres:13-alpine
+    image: postgres:16
+    container_name: address_db
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@localhost/postgres
-      - POSTGRES_PASSWORD=postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: 5432
     ports:
       - "5432:5432"
     restart: unless-stopped
 
-  server:
+  django:
     build:
       context: .
       dockerfile: ./Dockerfile
-      args:
-        - USER_ID
-        - GROUP_ID
+    container_name: address_django
     environment:
-      - DATABASE_URL=psql://postgres:postgres@db/postgres
-      - GOOGLE_API_KEY
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
     volumes:
       - ./address:/code/address
+      - ./example_site:/code
     ports:
-      - "8000:8000"
+      - 8000:8000
     depends_on:
       - db
     restart: unless-stopped
     stdin_open: true
     tty: true
+    command: >
+      bash -c "python wait_for_postgres.py &&
+               python manage.py migrate &&
+               python manage.py runserver 0.0.0.0:8000"

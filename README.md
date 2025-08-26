@@ -8,8 +8,8 @@
 Django Address is a set of models and methods for working with postal addresses.
 
 # Requirements
- * Python (3.5, 3.6, 3.7, 3.8)
- * Django (2.2, 3.0)
+ * Python (3.8, 3.9, 3.10, 3.11)
+ * Django (2.2, 3.0, 4.0, 5.0, 5.1, 5.2)
 
 We **recommend** and only officially support the latest patch release of each Python and Django series. 
 
@@ -210,8 +210,11 @@ To run the current tests:
 Django-address does not currently support the parsing of US territories aka Protectorates such as Guam or Puerto Rico.
 
 This topic is under active consideration and its status is described in [#82](https://github.com/furious-luke/django-address/issues/82)
- 
+
 ## Project Status Notes
+TODO: cleanup stale dev tools trash, like poetry, tox, flake8, etc.
+
+It's 2025 and this package needs more love. [Kestutis Januskevicius](@infohata) forking and making it work better, fixing issues with the newest Google Maps Places API.
 
 This library was created by [Luke Hodkinson](@furious-luke) originally focused on Australian addresses.
 

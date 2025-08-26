@@ -12,27 +12,23 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from pathlib import Path
+from dotenv import load_dotenv
 
-import environ
+load_dotenv()
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-env = environ.Env()
-
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "fbaa1unu0e8z5@9mm%k#+*d@iny*=-)ma2b#ymq)o9z^3%ijh)"
+SECRET_KEY = os.getenv("SECRET_KEY", "insecure-please-replace")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-TEMPLATE_DEBUG = True
-
-ALLOWED_HOSTS = []
-
+DEBUG = os.getenv('DEBUG', True)
+TEMPLATE_DEBUG = os.getenv('TEMPLATE_DEBUG', True)
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", [])
 
 # Application definition
 
@@ -79,16 +75,21 @@ WSGI_APPLICATION = "example_site.wsgi.application"
 
 # Specify your Google API key as environment variable GOOGLE_API_KEY
 # You may also specify it here, though be sure not to commit it to a repository
-GOOGLE_API_KEY = ""  # Specify your Google API key here
-GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", GOOGLE_API_KEY)
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
 
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
 DATABASES = {
-    "default": env.db(),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'test_address'),
+        'USER': os.getenv('POSTGRES_USER', 'test_user'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'test_password'),
+        'HOST': 'db',
+        'PORT': '5432',
+    },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
