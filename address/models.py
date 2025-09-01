@@ -7,7 +7,7 @@ try:
     from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
 except ImportError:
     from django.db.models.fields.related import (
-        ReverseSingleRelatedObjectDescriptor as ForwardManyToOneDescriptor,
+        ReverseSingleRelatedObjectDescriptor as ForwardManyToOneDescriptor, # type: ignore
     )
 
 logger = logging.getLogger(__name__)
@@ -71,8 +71,8 @@ def _to_python(value):
     except State.DoesNotExist:
         if state:
             if len(state_code) > State._meta.get_field("code").max_length:
-                if state_code != state:
-                    raise ValueError("Invalid state code (too long): %s" % state_code)
+                # if state_code != state:
+                #     raise ValueError("Invalid state code (too long): %s" % state_code)
                 state_code = ""
             state_obj = State.objects.create(name=state, code=state_code, country=country_obj)
         else:
@@ -293,7 +293,7 @@ class Address(models.Model):
         return ad
 
 
-class AddressDescriptor(ForwardManyToOneDescriptor):
+class AddressDescriptor(ForwardManyToOneDescriptor): # type: ignore
     def __set__(self, inst, value):
         super(AddressDescriptor, self).__set__(inst, to_python(value))
 
@@ -313,16 +313,13 @@ class AddressField(models.ForeignKey):
         kwargs["on_delete"] = kwargs.get("on_delete", default_on_delete)
         super(AddressField, self).__init__(*args, **kwargs)
 
-    def contribute_to_class(self, cls, name, virtual_only=False):
+    def contribute_to_class(self, cls, name, private_only=False):
         from address.compat import compat_contribute_to_class
-
-        compat_contribute_to_class(self, cls, name, virtual_only)
-
+        compat_contribute_to_class(self, cls, name, private_only)
         setattr(cls, self.name, AddressDescriptor(self))
 
     def formfield(self, **kwargs):
         from .forms import AddressField as AddressFormField
-
         defaults = dict(form_class=AddressFormField)
         defaults.update(kwargs)
         return super(AddressField, self).formfield(**defaults)
