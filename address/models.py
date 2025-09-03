@@ -272,6 +272,11 @@ class Address(models.Model):
         if not self.raw:
             raise ValidationError("Addresses may not have a blank `raw` field.")
 
+    def save(self, *args, **kwargs):
+        if not self.formatted:
+            self.formatted = str(self)
+        super().save(*args, **kwargs)
+
     def as_dict(self):
         ad = dict(
             street_number=self.street_number,
